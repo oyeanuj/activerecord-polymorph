@@ -32,9 +32,12 @@ module Polymorph
 
       through_class.define_singleton_method :instantiate, ->(attrs, column_types) {
         super(attrs, column_types).tap do |record|
-          break unless attrs['polymorph_query'].present?
-          transfer_fields = fields.map { |field| [field, attrs["#{attrs[source_type].downcase}_#{field}"]] }.to_h
-          record.assign_attributes(transfer_fields)
+          if attrs['polymorph_query'].present?
+            transfer_fields = fields.map { |field| [field, attrs["#{attrs[source_type].downcase}_#{field}"]] }.to_h
+            record.assign_attributes(transfer_fields)
+          else
+            record
+          end
         end
       }
 
